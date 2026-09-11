@@ -1,5 +1,30 @@
 spring:
   application:
-    name: notification
+    name: notification-service
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    consumer:
+      group-id: notification-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.training.kafka.*
+        spring.json.type.mapping:
+          com.training.kafka.order.event.OrderCreatedEvent:com.training.kafka.notification.event.OrderCreatedEvent,
+          com.training.kafka.inventory.event.InventoryRejectedEvent:com.training.kafka.notification.event.InventoryRejectedEvent,
+          com.training.kafka.inventory.event.InventoryReservedEvent:com.training.kafka.notification.event.InventoryReservedEvent,
+          com.training.kafka.payment.event.PaymentCompletedEvent:com.training.kafka.notification.event.PaymentCompletedEvent,
+          com.training.kafka.payment.event.PaymentFailedEvent:com.training.kafka.notification.event.PaymentFailedEvent
+
+
 server:
   port: 8084
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
