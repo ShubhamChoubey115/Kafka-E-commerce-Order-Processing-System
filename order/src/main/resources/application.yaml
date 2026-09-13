@@ -16,8 +16,18 @@ spring:
         format_sql: true
 
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: localhost:9092,localhost:9094,localhost:9096
+
     producer:
+      properties:
+        enable.idempotence: true
+        linger.ms: 5
+        batch.size: 16384
+        #so that it doesnot wait for 2 minutes to fail, and can end in 10 sec
+        delivery.timeout.ms: 10000
+        request.timeout.ms: 3000
+        compression.type: zstd
+      acks: all
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
